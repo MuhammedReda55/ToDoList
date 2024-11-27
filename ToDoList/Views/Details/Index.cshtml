@@ -1,0 +1,111 @@
+﻿@section Scripts {
+    @if (TempData["success"] != null)
+    {
+        <script>
+            toastr.success('@TempData["success"]');
+        </script>
+    }
+}
+
+<div>
+    <h1>
+        <a href="/Home/CreateUser">
+            <i class="bi bi-arrow-left me-3"></i>
+        </a>
+        Welcome, @ViewBag.name
+        </h1>
+</div>
+
+<div class="row mb-2">
+    <div class="col-9">
+        <a href="/Details/Create" class="btn btn-danger">
+            <i class="bi bi-plus-circle"></i> Create New
+        </a>
+    </div>
+</div>
+
+<br />
+<div class="row">
+    <table class="table">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Deadline</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <th scope="row">@(i + 1)</th>
+                    <td>@Model[i].Title</td>
+                    <td>@Model[i].Description</td>
+                    <td>@Model[i].Date</td>
+                    <td>
+                        <a href="/Details/Edit?userId=@Model[i].Id" class="btn btn-info">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="javascript:void(0);"
+                           class="btn btn-danger delete-btn"
+                           data-id="@Model[i].Id"
+                           data-title="@Model[i].Title">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item: <span id="itemTitle"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const itemId = this.getAttribute("data-id");
+                const itemTitle = this.getAttribute("data-title");
+                const deleteForm = document.getElementById('deleteForm');
+                const itemTitleElement = document.getElementById('itemTitle');
+
+                // Update the modal content
+                itemTitleElement.textContent = itemTitle;
+                deleteForm.action = `/Details/Delete?userId=${itemId}`;
+
+                // Show the modal
+                $('#deleteModal').modal('show');
+            });
+        });
+    });
+</script>
+
+<!-- Add Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
